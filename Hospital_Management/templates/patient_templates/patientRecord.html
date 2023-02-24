@@ -108,7 +108,7 @@
         event.preventDefault();
         var formData = $(this).serialize();
         const patientId = $('#patientId').val()
-        console.log(formData)
+
         $.ajax({
           url: '/patient/' + patientId + '/',
           type: 'POST',

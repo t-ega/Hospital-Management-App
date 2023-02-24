@@ -102,7 +102,6 @@
       var currentUrl = window.location.pathname;
       for (var i = 0; i < links.length; i++) {
         var linkUrl = links[i].getAttribute('href');
-        console.log(currentUrl, linkUrl)
         if (currentUrl === linkUrl) {
           links[i].classList.add('current');
         } else {

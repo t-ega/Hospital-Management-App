@@ -129,7 +129,7 @@
         event.preventDefault();
         var formData = $(this).serialize();
         const appointmentId = $('#appointmentId').val()
-        console.log(formData)
+
         $.ajax({
           url: '/appointments/' + appointmentId + '/',
           type: 'PUT',

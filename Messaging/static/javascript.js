@@ -1,8 +1,7 @@
     // Get the chats element
     const chatElementDiv = document.querySelectorAll(".list-group-item");
-    console.log(chatElementDiv)
+
     chatElementDiv.forEach(chatElement => {
-    console.log(chatElement)
     // Add a click event listener to the chat element
     chatElement.addEventListener("click", () => {
       // Make an AJAX request to the server to get the chat messages

@@ -17,8 +17,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Group
 
 def has_group(user, group_name):
-    """ registers the filter ('has_group') inside the templates rendered
-     so that we can check if the user belongs to a particular group"""
+    """ check if the user belongs to a particular group"""
     group = Group.objects.get(name=group_name)
     return True if group in user.groups.all() else False
 
@@ -31,7 +30,6 @@ def home(request):
     elif has_group(request.user, 'Admin'):
         template_name = 'dashboards/AdminDashBoard.html'
     elif has_group(request.user, 'Receptionist'):
-        print('no')
         template_name = 'dashboards/ReceptionistDashBoard.html'
     return render(request, template_name)
 
@@ -52,7 +50,9 @@ class Register(generic.CreateView):
     def form_valid(self, form):
         user = form.save()
         login(self.request, user)
-        user.groups.add('Patients')
+        # must have loaded the data using python manage.py loaddata groups.json!
+        group = Group.objects.get(name='Patients')
+        group.user_set.add(user)
         return super(Register, self).form_valid(form)
 
     def form_invalid(self, form):
@@ -227,7 +227,6 @@ class AppointmentDetailView(LoginRequiredMixin, PermissionRequiredMixin, View):
                 assigned_doctor=appointment.assigned_doctor,
                 date=appointment.date
             ).exclude(pk=appointment.pk)
-            print('here')
 
             for existing_appointment in existing_appointments:
                 if appointment.start_time < existing_appointment.end_time and \
@@ -310,7 +309,6 @@ class AvailableDoctors(LoginRequiredMixin, generic.ListView):
                                                  end_time__gt=kwargs['end_time'])
         context = {}
         if doctors:
-            print(doctors)
             for doctor in doctors:
                 context[doctor.staff.staff.id] = str(doctor.staff)
             return JsonResponse(context)

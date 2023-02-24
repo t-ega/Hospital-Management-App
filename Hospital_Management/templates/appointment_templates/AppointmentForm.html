@@ -196,7 +196,7 @@
                     var errVal = errors[key]
                     for (var err in errVal){
                         var element = key
-                        console.log($("[name='" + element + "']").eq(0))
+
                        $("[name='" + element + "']").eq(0).attr('title', errVal[0]).tooltip('show')
                     }
                 }

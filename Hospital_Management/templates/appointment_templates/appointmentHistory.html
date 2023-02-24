@@ -57,7 +57,7 @@
         url: '/appointment/' + appointmentId + '/',
         success: function(response) {
           for (var detail in response){
-          console.log(detail, response)
+
             var field = '#' + detail
             $(field).html(detail + " : " + response[detail])
           }
