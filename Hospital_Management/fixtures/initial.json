@@ -1,0 +1,98 @@
+[
+  {
+    "model": "Hospital_Management.StaffRank",
+    "pk": 1,
+    "fields": {
+      "rank": "Head Doctor"
+    }
+  },
+
+  {
+    "model": "Hospital_Management.StaffRank",
+    "pk": 2,
+    "fields": {
+      "rank": "Doctor"
+    }
+  },
+
+  {
+    "model": "Hospital_Management.StaffRank",
+    "pk": 3,
+    "fields": {
+      "rank": "Nurse"
+    }
+  },
+
+  {
+    "model": "Hospital_Management.StaffRank",
+    "pk": 4,
+    "fields": {
+      "rank": "Pharmacist"
+    }
+  },
+
+  {
+    "model": "Hospital_Management.StaffRank",
+    "pk": 5,
+    "fields": {
+      "rank": "Receptionist"
+    }
+  },
+
+  {
+    "model": "Hospital_Management.StaffRank",
+    "pk": 6,
+    "fields": {
+      "rank": "Cleaner"
+    }
+  },
+
+  {
+    "model": "Hospital_Management.StaffRank",
+    "pk": 7,
+    "fields": {
+      "rank": "Security"
+    }
+  },
+
+  {
+    "model": "Hospital_Management.Specialization",
+    "pk": 1,
+    "fields": {
+      "name": "Dermatologist"
+    }
+  },
+
+  {
+    "model": "Hospital_Management.Specialization",
+    "pk": 2,
+    "fields": {
+      "name": "Nutritionist"
+    }
+  },
+
+  {
+    "model": "Hospital_Management.Specialization",
+    "pk": 3,
+    "fields": {
+      "name": "Pediatrician"
+    }
+  },
+
+  {
+    "model": "Hospital_Management.Specialization",
+    "pk": 4,
+    "fields": {
+      "name": "Dentist"
+    }
+  },
+
+  {
+    "model": "Hospital_Management.Specialization",
+    "pk": 5,
+    "fields": {
+      "name": "NULL"
+    }
+  }
+
+]

@@ -1,28 +1,22 @@
 {% extends templates.base %}
-{% load static %}
-{% load has_group %}
 {% block content %}
     <div class="alert alert-success" style="display: none" role="alert">
       Item has been deleted browser would refresh immediately!
     </div>
     {% for appointment in appointments %}
-
-    <div class="card appointment-card" id="card-{{appointment.id}}" >
-        {% if appointment.date < date.today %}
-        <span class="text-danger"><i class="fas fa-exclamation-circle mr-1"></i></span>
-        {% endif %}
+    <div class="card appointment-card" id="card-{{appointment.id}}">
         <div class="card-body d-flex align-items-center">
-            <img src="{% static '/images/avatar.jpg' %}" alt="User profile picture" class="rounded-circle mr-3" width="50" height="50">
+            <img src="{% static 'images/avatar' %}" alt="User profile picture" class="rounded-circle mr-3" width="50" height="50">
             <div class="text-left">
               <h5 class="card-title mb-1">{{ appointment.patient }}</h5>
               <p class="card-text mb-1"><i class="far fa-calendar-alt mr-1"></i>{{ appointment.date }} at {{ appointment.start_time }}</p>
               <p class="card-text"><i class="fas fa-user-md mr-1"></i>Doctor: {{ appointment.assigned_doctor }}</p>
-                <p class="card-text"><i class="fas fa-user-md mr-1"></i>Status: {{ appointment.get_status_display }}</p>
             </div>
             <div class="ml-auto">
               <button class="btn btn-link dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="fas fa-ellipsis-v"></i>
               </button>
+                <button id="appointmentId" value="{{appointment.id}}" hidden></button>
               <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
                 <a class="dropdown-item" href="#" data-toggle="edit-modal" data-target="#editModal" data-appointment-id="{{ appointment.id }}">Edit</a>
                 <a class="dropdown-item" href="#" data-toggle="delete-modal" data-target="#deleteModal" data-appointment-id="{{ appointment.id }}">Delete</a>
@@ -58,25 +52,14 @@
                       <label for="editEndTime" >End Time</label>
                       <input type="time" step="any" class="form-control" name="end_time" id="editEndTime">
                   </div>
-                  <button id="appointmentId" value="{{appointment.id}}" hidden></button>
                   <div class="form-group">
                       <label for="reason" >Reason</label>
                       <textarea class="form-control" name="reason" id="reason"></textarea>
                   </div>
-                  {% if request.user|has_group:'Doctors' %}
-                  <div class="form-group">
-                      <label for="reason" >Appointment Status</label>
-                      <select class="form-control" name="status" id="status">
-                          <option value="P">Pending</option>
-                          <option value="A">Approved</option>
-                          <option value="C">Completed</option>
-                      </select>
-                  </div>
-                  {% endif %}
                    <div class="form-group">
                       <label for="patientDoc">Assigned Doctor</label>
                        <input type="text" hidden name="assigned_doctor" id="doc">
-                      <input type="text" readonly class="form-control" id="patientDoc" data-toggle="tooltip" data-placement="top" title="Sorry, you cant edit this field, contact the hospital admin">
+                      <input type="text" readonly class="form-control" id="patientDoc" data-toggle="tooltip" data-placement="top" title="Sorry, you cant edit this field, contact the hospital admin or a doctor">
                   </div>
                   <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -122,9 +105,7 @@
           $('#reason').val(appointment.reason);
           $('[name="assigned_doctor"]').val(appointment.doctor_id);
           $('#patientDoc').val(appointment.doctor);
-          $('#status').val(appointment.status);
           $('#patient').val(appointment.patientId)
-          $('#appointmentId').val(appointmentId)
         }
       });
     });
@@ -135,7 +116,7 @@
             event.preventDefault();
             var formData = $(this).serialize();
             const appointmentId = $('#appointmentId').val()
-
+            console.log(formData)
             $.ajax({
               url: '/appointment/' + appointmentId + '/',
               type: 'PUT',
@@ -172,7 +153,7 @@
       var appointmentId = $(this).data('appointment-id');
       $('#deleteModal').modal('show');
       // Set appointment ID in delete form
-      $('#deleteForm').attr('action', '/appointment/' + appointmentId + '/delete/');
+      $('#deleteForm').attr('action', '/appointments/' + appointmentId + '/delete/');
     });
 
     $("#menu-toggle").click(function(e) {
@@ -182,7 +163,7 @@
 
     $(document).on('click', '[id="delete"]',  function() {
       $.ajax({
-        url: '/appointment/' + $('#appointmentId').val() + '/',
+        url: '/appointments/' + $('#appointmentId').val() + '/',
         type: 'DELETE',
         beforeSend: function(xhr) {
             xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');

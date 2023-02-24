@@ -1,0 +1,70 @@
+{% extends templates.base %}
+{% load static %}
+{% block content %}
+  <head>
+      <meta charset="UTF-8">
+      <title>Appointment History</title>
+  </head>
+  <body>
+
+  {% if not patient %}
+    <h5> Looks like this patient hasn't had any appointments yet</h5>
+  {% endif %}
+       {% for appointment in patient %}
+         <div class="card appointment-card" id="card-{{appointment.id}}">
+        <div class="card-body d-flex align-items-center">
+            <img src="{% static 'images/avatar' %}" alt="User profile picture" class="rounded-circle mr-3" width="50" height="50">
+            <div class="text-left">
+              <h5 class="card-title mb-1">{{appointment.date}}</h5>
+              <p class="card-text"><i class="fas fa-user-md mr-1"></i>Doctor: {{appointment.assigned_doctor}}</p>
+              <p class="card-text mb-1"><i class="far fa-calendar-alt mr-1"></i>Start Time: {{appointment.start_time}}</p>
+              <p class="card-text mb-1"><i class="far fa-calendar-alt mr-1"></i>End Time: {{appointment.end_time}}</p>
+            </div>
+              <div class="ml-auto">
+                     <a href="#" data-toggle="appointment-modal" data-target="#appointmentModal" data-appointment-id="{{appointment.id}}">View</a>
+              </div>
+        </div>
+    </div>
+      {% endfor %}
+     <!--PatientDetails's Appointment history-->
+    <div class="modal fade" id="appointmentModal" tabindex="-1" role="dialog" aria-labelledby="appointmentModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="appointmentModalLabel">Appointment Detail</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+            <div class="modal-body">
+                <h4 id="date"></h4>
+                <p id="time"></p>
+                <p id="end_time"></p>
+                <p id="status"></p>
+                <p id="doctor"></p>
+                <p id="reason"></p>
+              </div>
+        </div>
+      </div>
+    </div>
+  <script>
+
+    $(document).on('click', '[data-toggle="appointment-modal"]', function() {
+      var appointmentId = $(this).data('appointment-id');
+      $('#appointmentModal').modal('show');
+      // Load patient data into form fields
+      $.ajax({
+        url: '/appointment/' + appointmentId + '/',
+        success: function(response) {
+          for (var detail in response){
+          console.log(detail, response)
+            var field = '#' + detail
+            $(field).html(detail + " : " + response[detail])
+          }
+        }
+      });
+    });
+
+  </script>
+  </body>
+  {% endblock%}

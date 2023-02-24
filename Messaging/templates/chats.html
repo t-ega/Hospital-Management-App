@@ -1,10 +1,369 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends templates.base %}
+{% block content %}
+{% load static %}
+<style>
+
+body {
+  background-color: #74EBD5;
+  background-image: linear-gradient(90deg, #74EBD5 0%, #9FACE6 100%);
+  min-height: 100vh;
+}
+
+  ::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  ::-webkit-scrollbar-track {
+    width: 5px;
+    background: #f5f5f5;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    width: 1em;
+    background-color: #ddd;
+    outline: 1px solid slategrey;
+    border-radius: 1rem;
+  }
+
+.text-small {
+  font-size: 0.9rem;
+}
+
+.messages-box,
+.chat-box {
+  height: 510px;
+  overflow-y: scroll;
+}
+
+.rounded-lg {
+  border-radius: 0.5rem;
+}
+
+input::placeholder {
+  font-size: 0.9rem;
+  color: #999;
+}
+
+</style>
+ <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+
+<div class="container py-5 px-4 overflow-hidden">
+  <div class="row rounded-lg overflow-hidden shadow">
+    <!-- Users box-->
+    <div class="col-5 px-0">
+      <div class="bg-white">
+
+        <div class="row bg-gray px-4 py-2 bg-light">
+          <div class="col-md-10">
+            <p class="h5 mb-0 py-1">Recent</p>
+          </div>
+          <div class="col-md-2 text-right">
+            <i class="fa fa-plus" id="add-doctor-btn"></i>
+          </div>
+        </div>
+        
+        
+      <!-- Modal -->
+<div class="modal fade" id="add-doctor-modal" tabindex="-1" role="dialog" aria-labelledby="add-doctor-modal-title" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="add-doctor-modal-title">New Chat</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <!-- code to display the doctor list -->
+        <!-- ... -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+      <div class="messages-box" id="chat">
+          {% for chat in chats %}
+          <div class="list-group rounded-0">
+            <a class="list-group-item list-group-item-action text-black rounded-0" data-chat-id="{{chat.id}}">
+              <div class="media"><img src="https://bootstrapious.com/i/snippets/sn-chat/avatar.svg" alt="user" width="50" class="rounded-circle">
+                <div class="media-body ml-4">
+                  <div class="d-flex align-items-center justify-content-between mb-1">
+                    <h6 class="mb-0">{% if chat.sender == request.user %}{{chat.receiver}}{% elif chat.receiver == request.user %}{{chat.sender}}{% endif %}</h6><small class="small font-weight-bold">{{chat.timestamp}}</small>
+                  </div>
+                  <p class="font-italic mb-0 text-small">{% if chat.messages.exists %}{{chat.messages.latest.content}}{% else %}No messages{% endif %}</p>
+                </div>
+              </div>
+            </a>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+    <!-- Chat Box-->
+    <div class="col-7 px-0">
+      <div class="px-4 py-5 chat-box bg-white">
+        <div id="chat-field" >
+          <p>Select any chat to start typing.....</p>
+        </div>
+      </div>
+
+      <!-- Typing area -->
+      <form action="#" class="bg-light">
+        <div class="input-group">
+          <input type="text" placeholder="Type a message" aria-describedby="button-addon2" id="message-input" class="form-control rounded-0 border-0 py-4 bg-light">
+          <div class="input-group-append">
+            <button id="send-btn" type="submit" class="btn btn-link"> <i class="fa fa-paper-plane"></i></button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  const user = '{{user}}'
+  const chatBox = document.getElementById("chat-field");
+  // Get the chats element
+  const chatElements = document.querySelectorAll(".list-group-item");
+
+  chatElements.forEach(function(chatElement) {
+      chatElement.addEventListener('click', function(event) {
+          var chatId = chatElement.getAttribute('data-chat-id');
+          onChatClick(chatId);
+      });
+  });
+
+function onChatClick(chatId){
+     // open a WebSocket connection for the chat
+     openChatSocket(chatId);
+
+      
+      // Make an AJAX request to the server to get the chat messages
+      fetch(`/messaging/chats/${chatId}/messages/`)
+        .then(response => response.json())
+        .then(messages => {
+          // update the class of the selected chat
+
+          messageList = messages.data
+
+          // Delete the messages in the chat box
+          chatBox.innerHTML = "";
+
+          document.getElementById('chat').setAttribute('data-receiver-id', messages.receiver)
+
+          messageList.forEach(message => {
+            const messageElement = document.createElement("div");
+            
+            if (message.sender == user){
+                messageElement.innerHTML = `
+                     <div class="media w-50 ml-auto mb-3">
+                    <div class="media-body">
+                    <div class="bg-primary rounded py-2 px-3 mb-2">
+                    <p class="text-small mb-0 text-white">${message.content}</p>
+                  </div>
+                  <p class="small text-muted message">${message.timestamp}</p>
+                </div>
+              </div>
+            </div>`
+            }else{
+                messageElement.innerHTML = `
+                <div class="media-body ml-3">'
+                 <div class="media w-50 mb-3">
+                  <img src="https://bootstrapious.com/i/snippets/sn-chat/avatar.svg" alt="user" width="50" class="rounded-circle">
+                  <div class="bg-light rounded py-2 px-3 mb-2">
+                    <p class="text-small mb-0 text-muted message">${message.content}</p>
+                  </div>
+                  <p class="small text-muted">${message.timestamp}</p>
+                </div>
+              </div>
+            `;
+            }
+            chatBox.appendChild(messageElement);
+            const messageElements = chatBox.getElementsByClassName('message');
+            const lastMessageElement = messageElements[messageElements.length - 1];
+            lastMessageElement.scrollIntoView({ behavior: 'smooth' });
+          });
+        });
+}
+
+document.getElementById("add-doctor-btn").addEventListener("click", function() {
+  // make AJAX request to retrieve the list of doctors
+  $.ajax({
+    url: "{% url 'messaging:get_doctors' %}",
+    type: "GET",
+    success: function(data) {
+      data = data.doctors
+      // clear the modal body and add the doctor list
+      var modalBody = document.querySelector("#add-doctor-modal .modal-body");
+      modalBody.innerHTML = "";
+      
+      data.forEach(function(doctor) {
+        var doctorItem = document.createElement("div");
+        doctorItem.classList.add("doctor-item");
+        doctorItem.dataset.doctorId = doctor.id;
+        doctorItem.innerText = doctor.name;
+
+        doctorItem.addEventListener('click', function() {
+          // Get a new chat Id from the database
+          $.ajax({
+              url: `new-chat/{{request.user.id}}/${doctor.id}/`,
+              type: "GET",
+              success: function(data) {
+                chat_id = data.chat_id
+                // Clear the existing messages in the chat field
+                const chatField = document.querySelector('#chat-field');
+                chatField.innerHTML = '';
+
+                // Append the doctor's name to the users box
+                const usersBox = document.querySelector('.messages-box');
+                
+                const user = document.createElement('div');
+                user.classList.add('list-group rounded-0');
+               
+                user.innerHTML = `
+                   <a class="list-group-item list-group-item-action text-white rounded-0" data-chat-id="${chat.id}">
+                  <div class="media">
+                    <img src="https://bootstrapious.com/i/snippets/sn-chat/avatar.svg" alt="user" width="50" class="rounded-circle">
+                    <div class="media-body ml-4">
+                      <div class="d-flex align-items-center justify-content-between mb-1">
+                        <h6 class="mb-0">${doctor.name}</h6>
+                      </div>
+                    </div>
+                  </div>
+                `;
+                usersBox.appendChild(user);
+              }, 
+              error: function(e){
+                console.log('Error creating a new chat')
+              }
+          })
+        });
+      modalBody.appendChild(doctorItem);
+        
+      });
+      
+      // show the modal
+      $("#add-doctor-modal").modal("show");
+
+    },
+    error: function(data) {
+      // clear the modal body and add the doctor list
+      var modalBody = document.querySelector("#add-doctor-modal .modal-body");
+      modalBody.innerHTML = "";
+      var errorItem = document.createElement("div")
+      errorItem.innerText += "Create a new appointment to chat with a doctor";
+      modalBody.appendChild(errorItem)
+
+        // show the modal
+        $("#add-doctor-modal").modal("show");
+    }
+  });
+});
+
+
+// dictionary to keep track of WebSocket connections for each chat
+var chatSockets = {};
+
+function openChatSocket(chatId){
+    // check if a WebSocket connection already exists for the chat
+    if (chatSockets[chatId]) {
+      return;
+    }
+  
+    // create a new WebSocket connection for the chat
+    var socket = new WebSocket(`ws://${window.location.host}/ws/chat/${chatId}/`);
+
+
+    socket.onopen = function() {
+        console.log('Websocket connected.');
+    };
+
+    // associate the WebSocket connection with the chat
+    chatSockets[chatId] = socket;
+
+    socket.onclose = function() {
+        console.log('Websocket disconnected.');
+    };
+
+    const messageInput = document.getElementById('message-input');
+    const sendBtn = document.getElementById('send-btn');
+    const messagesDiv = document.getElementById('chat-field');
+    const receiverId = document.getElementById('chat');
+
+    sendBtn.addEventListener('click', function(event) {
+      console.log(document.getElementById('chat'))
+      event.preventDefault();
+        const message = messageInput.value.trim();
+        if (message) {
+            const data = {
+                message: message,
+                sender: user,
+                receiver: receiverId.dataset.receiverId
+            };
+           
+            socket.send(JSON.stringify(data));
+            messageInput.value = '';
+        }
+    });
+
+    socket.onmessage = function(event) {
+        const messageElement = document.createElement('div')
+        const message = JSON.parse(event.data);
+         // Get the active chat element
+         var activeChat = document.querySelector('.list-group-item.active');
+         // select the <p> element inside this <a> element
+         const chatMessage = activeChat.querySelector('.font-italic.mb-0.text-small');
+        if (message.sender == user){
+            messageElement.innerHTML = `
+                <div class="media w-50 ml-auto mb-3">
+                <div class="media-body">
+                <div class="bg-primary rounded py-2 px-3 mb-2">
+                <p class="text-small mb-0 text-white message">${message.content}</p>
+              </div>
+              <p class="small text-muted">${message.timestamp}</p>
+            </div>
+          </div>
+        </div>`
+        chatMessage.innerHTML = `you:${message.content}`
+        }else{
+            messageElement.innerHTML = `
+            <div class="media-body ml-3">'
+            <div class="media w-50 mb-3">
+              <img src="https://bootstrapious.com/i/snippets/sn-chat/avatar.svg" alt="user" width="50" class="rounded-circle">
+              <div class="bg-light rounded py-2 px-3 mb-2">
+                <p class="text-small mb-0 text-muted message">, ${message.content}</p>
+              </div>
+              <p class="small text-muted">${message.timestamp}</p>
+            </div>
+          </div>
+        `;
+        chatMessage.innerHTML = `sender:${message.content}`
+        }
+        chatBox.appendChild(messageElement);
+        const messageElements = chatBox.getElementsByClassName('message');
+        const lastMessageElement = messageElements[messageElements.length - 1];
+        lastMessageElement.scrollIntoView({ behavior: 'smooth' });
+    };
+
+}
+
+// get all the a tags
+const chatLinks = document.querySelectorAll('[data-chat-id]');
+// add event listeners to all the a tags
+chatLinks.forEach(link => {
+  link.addEventListener('click', (event) => {
+    // remove the 'active' class from all the a tags
+    chatLinks.forEach(chatLink => {
+      chatLink.classList.remove('active');
+    });
+    // add the 'active' class to the clicked a tag
+    event.currentTarget.classList.add('active');
+  });
+});
+
+</script>
+{% endblock %}

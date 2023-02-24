@@ -1,0 +1,184 @@
+{% extends templates.base %}
+{% block content %}
+
+ <div class="container-fluid py-5 ">
+   <div class="card bg-no-repeat bg-center bg-cover h-64" style="background-image: url('https://watermark.lovepik.com/photo/50051/8035.jpg_wh1200.jpg)">
+      <div class="px-6 py-4 bg-indigo-500 rounded-t-lg text-center text-white">
+          <h1 class="text-3xl font-bold">Welcome, {{user.username|title}}</h1>
+      </div>
+   </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-5">
+      <div class="card h-full bg-white rounded-lg shadow-lg">
+        <div class="card-body py-5 px-8">
+          <h5 class="card-title text-2xl font-bold">Create Appointment</h5>
+          <p class="card-text text-gray-600 mb-4">Use this feature to schedule appointments for patients.</p>
+          <a href="{% url 'create-appointment' %}" class="btn btn-primary">Go to feature</a>
+        </div>
+      </div>
+      <div class="card h-full bg-white rounded-lg shadow-lg">
+        <div class="card-body py-5 px-8">
+          <h5 class="card-title text-2xl font-bold">View Upcoming Appointments</h5>
+          <p class="card-text text-gray-600 mb-4">Use this feature to view and manage upcoming appointments.</p>
+          <a href="{% url 'upcoming-appointments' %}" class="btn btn-primary">Go to feature</a>
+        </div>
+      </div>
+      <div class="card h-full bg-white rounded-lg shadow-lg">
+        <div class="card-body py-5 px-8">
+          <h5 class="card-title text-2xl font-bold">PatientDetails Records</h5>
+          <p class="card-text text-gray-600 mb-4">Use this feature to access and update patient records.</p>
+          <a href="#" class="btn btn-primary">Go to feature</a>
+        </div>
+      </div>
+    </div>
+    <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="editModalLabel">Edit Appointment</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+              <form id="editForm" method="POST" >
+                  {% csrf_token %}
+                  <div class="form-group">
+                    <label for="patientId">PatientDetails</label>
+                    <input type="text" class="form-control" name="patient" id="patientName" readonly>
+                    <input type="text" hidden name="patient" id="patientId">
+                  </div>
+                  <div class="form-group">
+                    <label for="editDateInput">Date</label>
+                    <input type="date" class="form-control" name="date" id="editDateInput" placeholder="Enter date">
+                  </div>
+                  <div class="form-group">
+                    <label for="editTimeInput">Start Time</label>
+                    <input type="time" step="any" class="form-control" name="start_time" title="" id="editTimeInput" placeholder="Enter time">
+                  </div>
+                   <div class="form-group">
+                      <label for="editEndTime" >End Time</label>
+                      <input type="time" step="any" class="form-control" name="end_time" id="editEndTime">
+                  </div>
+                  <div class="form-group">
+                      <label for="reason" >Reason</label>
+                      <textarea class="form-control" name="reason" id="reason"></textarea>
+                  </div>
+                   <div class="form-group">
+                      <label for="patientDoc">Assigned Doctor</label>
+                       <input type="text" hidden name="assigned_doctor" id="doc">
+                      <input type="text" readonly class="form-control" id="patientDoc" data-toggle="tooltip" data-placement="top" title="Sorry, you cant edit this field, contact the hospital admin or a doctor">
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary" id="saveButton">Save Changes</button>
+                  </div>
+              </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <h1 class="text-3xl font-bold mt-5">Today's Appointment</h1>
+     {% if not appointments %}
+     <p>No appointments today</p>
+     {% else %}
+    <table class="table table-striped mt-5">
+      <thead>
+        <tr>
+          <th scope="col" class="px-4 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">PatientDetails Name</th>
+          <th scope="col" class="px-4 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Date</th>
+          <th scope="col" class="px-4 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Time</th>
+          <th scope="col" class="px-4 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Reason for Visit</th>
+          <th scope="col" class="px-4 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for appointment in appointments %}
+          <tr>
+            <td class="px-4 py-4 whitespace-no-wrap border-b border-gray-200">
+              <div class="flex items-center">
+                <div class="text-sm leading-5 font-medium text-gray-900">{{ appointment.patient }}</div>
+              </div>
+                <input id="appointmentId" hidden value="{{appointment.id}}">
+            </td>
+            <td class="px-4 py-4 whitespace-no-wrap border-b border-gray-200">
+              <div class="text-sm leading-5 text-gray-900">{{ appointment.date }}</div>
+            </td>
+            <td class="px-4 py-4 whitespace-no-wrap border-b border-gray-200">
+              <div class="text-sm leading-5 text-red-700">{{ appointment.start_time }}</div>
+            </td>
+            <td class="px-4 py-4 whitespace-no-wrap border-b border-gray-200">
+              <div class="text-sm leading-5 text-gray-900">{{ appointment.reason }}</div>
+            </td>
+            <td class="px-4 py-4 whitespace-no-wrap border-b border-gray-200 text-sm leading-5 text-gray-500">
+              <a href="#" class="text-indigo-600 hover:text-indigo-900" data-toggle="edit-modal" data-target="#editModal" data-appointment-id="{{ appointment.id }}"><button class="btn btn-primary">Edit</button></a> |
+              <a href="#" class="text-indigo-600 hover:text-indigo-900" data-toggle="delete-modal" data-target="#deleteModal" data-appointment-id="{{ appointment.id }}"><button class="btn btn-primary">Cancel</button></a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+     {% endif %}
+  </div>
+</div>
+    <!-- /#page-content-wrapper -->
+  </div>
+  <!-- /#wrapper -->
+<script>
+  $(document).ready(function() {
+      $('#editForm').submit(function(event) {
+        event.preventDefault();
+        var formData = $(this).serialize();
+        const appointmentId = $('#appointmentId').val()
+        console.log(formData)
+        $.ajax({
+          url: '/appointments/' + appointmentId + '/',
+          type: 'PUT',
+          data: formData,
+          beforeSend: function(xhr) {
+            xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
+          },
+          success: function(response) {
+            // Success logic here
+            if (response.success){
+                 location.reload()
+            }
+            else {
+                var errors = response['errors']
+                for (var key in errors){
+                    var errVal = errors[key]
+                    for (var err in errVal){
+                        var element = key
+                       $("[name='" + element + "']").eq(0).attr('title', errVal[0]).tooltip('show')
+                    }
+                }
+            }
+
+          },
+        });
+      });
+    });
+
+
+  $(document).on('click', '[data-toggle="edit-modal"]', function() {
+      var appointmentId = $(this).data('appointment-id');
+      $('#editModal').modal('show');
+      // Load appointment data into form fields
+      $.ajax({
+        url: '/appointments/' + appointmentId + '/',
+        success: function(appointment) {
+          $('#editDateInput').val(appointment.date);
+          $('#patientName').val(appointment.patientName);
+          $('#patientId').val(appointment.patientId)
+          $('#editTimeInput').val(appointment.time);
+          $('#editEndTime').val(appointment.end_time);
+          $('#reason').val(appointment.reason);
+          $('#patientDoc').val(appointment.doctor);
+          $('#doc').val(appointment.doctor_id);
+        }
+      });
+    });
+
+</script>
+</body>
+{% endblock %}
+

@@ -1,0 +1,39 @@
+{% extends templates.base %}
+{% block content %}
+<head>
+    <meta charset="UTF-8">
+    <title>PatientDetails DashBoard</title>
+</head>
+<body>
+     <div class="container-fluid py-5 ">
+        <div class="card bg-no-repeat bg-center bg-cover h-64" style="background-image: url('https://watermark.lovepik.com/photo/50051/8035.jpg_wh1200.jpg)">
+      <div class="px-6 py-4 bg-indigo-500 rounded-t-lg text-center text-white">
+          <h1 class="text-3xl font-bold">Welcome, {{user.username|title}}</h1>
+      </div>
+   </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-5">
+      <div class="card h-full bg-white rounded-lg shadow-lg">
+        <div class="card-body py-5 px-8">
+          <h5 class="card-title text-2xl font-bold">View Upcoming Appointments</h5>
+          <p class="card-text text-gray-600 mb-4">Use this feature to view and manage your upcoming appointments.</p>
+          <a href="{% url 'upcoming-appointments' %}" class="btn btn-primary">Go to feature</a>
+        </div>
+      </div>
+      <div class="card h-full bg-white rounded-lg shadow-lg">
+        <div class="card-body py-5 px-8">
+          <h5 class="card-title text-2xl font-bold">Create Appointments</h5>
+          <p class="card-text text-gray-600 mb-4">Use this feature to create appointments.</p>
+          <a href="{% url 'create-appointment' %}" class="btn btn-primary">Go to feature</a>
+        </div>
+      </div>
+      <div class="card h-full bg-white rounded-lg shadow-lg">
+        <div class="card-body py-5 px-8">
+          <h5 class="card-title text-2xl font-bold">My Records</h5>
+          <p class="card-text text-gray-600 mb-4">Use this feature to access and update your records.</p>
+          <a href="{% url 'my-records' %}" class="btn btn-primary">Go to feature</a>
+        </div>
+      </div>
+    </div>
+     </div>
+</body>
+{% endblock %}

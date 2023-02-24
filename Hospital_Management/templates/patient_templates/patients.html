@@ -1,0 +1,150 @@
+{% extends templates.base %}
+ {% load static %}
+{% block content %}
+<head>
+    <meta charset="UTF-8">
+    <title>PatientDetails's Record</title>
+</head>
+    <div class="alert alert-success" id="update" style="display:none;">
+        Patient id successfully updated
+    </div>
+     {% for patient in patients %}
+    <div class="card appointment-card" id="card-{{appointment.id}}">
+        <div class="card-body d-flex align-items-center">
+            <img src="{% static 'images/avatar.jpg' %}" alt="User profile picture" class="rounded-circle mr-3" width="50" height="50">
+            <div class="text-left">
+              <h5 class="card-title mb-1">{{ patient}}</h5>
+              <p class="card-text mb-1"><i class="far fa-calendar-alt mr-1"></i>Age: {{patient.age}}</p>
+              <p class="card-text mb-1"><i class="fas fa-phone"></i>Mobile: {{patient.mobile}}</p>
+              <p class="card-text"><i class="fas fa-user-md mr-1"></i>Doctor: {{patient.assigned_doctor.firstname}}</p>
+            </div>
+              <div class="ml-auto">
+                  <button class="btn btn-link dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-ellipsis-v"></i>
+                  </button>
+                  <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+                    <a class="dropdown-item" href="{% url 'appointment-history' patient.patient.id %}">Appointment History</a>
+                    <a class="dropdown-item" href="#" data-toggle="edit-modal" data-target="#editModal" data-patient-id="{{ patient.patient.id }}">View/Edit PatientDetails Details {{patient.id}}</a>
+                  </div>
+              </div>
+        </div>
+    </div>
+    {% endfor %}
+        <!--View/Edit PatientDetails's Details Modal-->
+     <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="editModalLabel">PatientDetails Details</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+            <div class="modal-body">
+                  <form id="editForm" method="POST" >
+                      {% csrf_token %}
+                      <input id="patientId" name="patient" hidden>
+                      <div class="form-group">
+                        <label for="firstname">FirstName</label>
+                        <input type="text" class="form-control" name="firstname" id="firstname" placeholder="PatientDetails's Firstname">
+                      </div>
+                      <div class="form-group">
+                        <label for="lastname">LastName</label>
+                        <input type="text" step="any" class="form-control" name="lastname" id="lastname" placeholder="PatientDetails's Lastname">
+                      </div>
+                      <div class="form-group">
+                          <label for="mobile">Mobile Number</label>
+                          <input type="tel" class="form-control" name="mobile" id="mobile">
+                      </div>
+                      <div class="form-group">
+                          <label for="weight">Weight</label>
+                          <input type="number" class="form-control" name="weight" id="weight">
+                      </div>
+                      <div class="form-group">
+                          <label for="height">Height</label>
+                          <input type="number" class="form-control" name="height" id="height">
+                      </div>
+                      <div class="form-group">
+                          <label for="height">Age</label>
+                          <input type="number" class="form-control" name="age" id="age">
+                      </div>
+                      <div class="form-group">
+                          <label for="blood_type">Blood Type</label>
+                          <input type="text" class="form-control" name="blood_type" id="blood_type">
+                      </div>
+                      <div class="form-group">
+                          <label for="address">Address</label>
+                          <input type="text" class="form-control" name="address" id="address">
+                      </div>
+                      <div class="form-group">
+                          <label for="symptoms">Symptoms</label>
+                          <textarea class="form-control" name="symptoms" id="symptoms"></textarea>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary" id="saveButton">Save</button>
+                      </div>
+                  </form>
+              </div>
+        </div>
+      </div>
+    </div>
+
+<script>
+
+    $(document).on('click', '[data-toggle="edit-modal"]', function() {
+      var patientId = $(this).data('patient-id');
+      $('#editModal').modal('show');
+      // Load patient data into form fields
+      $.ajax({
+        url: '/patient/' + patientId + '/',
+        success: function(response) {
+          for (var detail in response){
+            var field = '#' + detail
+            $(field).val(response[detail])
+          }
+          $('#patientId').val(response['id'])
+        }
+      });
+    });
+
+    $(document).ready(function() {
+      $('#editForm').submit(function(event) {
+        event.preventDefault();
+        var formData = $(this).serialize();
+        const patientId = $('#patientId').val()
+        console.log(formData)
+        $.ajax({
+          url: '/patient/' + patientId + '/',
+          type: 'POST',
+          data: formData,
+          beforeSend: function(xhr) {
+            xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
+          },
+          success: function(response) {
+            // Success logic here
+           if (response.success){
+                $('#editModal').modal('hide')
+                var updateDiv = document.getElementById('update')
+                updateDiv.innerHTML = 'Sucessfully updated!'
+                updateDiv.style.display = 'block'
+                setTimeout(function() {updateDiv.style.display = 'none'}, 4000)
+            }
+            else {
+                var errors = response['errors']
+                for (var key in errors){
+                    var errVal = errors[key]
+                    for (var err in errVal){
+                        var element = key
+                       $("[name='" + element + "']").eq(0).attr('title', errVal[0]).tooltip('show')
+                    }
+                }
+            }
+          },
+        });
+      });
+    });
+
+
+</script>
+{% endblock %}

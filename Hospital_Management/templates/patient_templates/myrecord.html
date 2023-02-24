@@ -1,0 +1,155 @@
+{% extends templates.base %}
+{% block content %}
+
+<style>
+  .appointment-row {
+    display: none;
+  }
+  .loading-indicator {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.5);
+    z-index: 9999;
+  }
+  .loading-indicator .spinner-border {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+</style>
+  <head>
+      <meta charset="UTF-8">
+      <title>Appointment History</title>
+  </head>
+  <body>
+    <div class="form-group">
+  <label for="filter-select">Filter by:</label>
+  <div class="input-group">
+    <select class="form-control" id="filter-select">
+      <option value="all">All</option>
+      <option value="today">Today</option>
+      <option value="yesterday">Yesterday</option>
+      <option value="last-week">Last Week Till Now</option>
+      <option value="last-month">Last Month Till Now</option>
+    </select>
+    <div class="input-group-append">
+      <button class="btn btn-outline-secondary" type="button" id="clear-filter">Clear Filter</button>
+    </div>
+  </div>
+</div>
+<div class="loading">
+  <div class="spinner-border" role="status">
+    <span class="sr-only">Loading...</span>
+  </div>
+</div>
+
+<table class="table table-striped table-bordered">
+  <thead>
+    <tr>
+      <th>Date</th>
+      <th>Time</th>
+      <th>End Time</th>
+      <th>Status</th>
+      <th>Doctor</th>
+      <th>Reason</th>
+    </tr>
+  </thead>
+  <tbody class="appointment-rows">
+    {% for appointment in appointment_history %}
+    <tr>
+      <td>{{ appointment.date|date:"Y-m-d"  }}</td>
+      <td>{{ appointment.start_time }}</td>
+      <td>{{ appointment.end_time }}</td>
+      <td>{{ appointment.get_status_display }}</td>
+      <td>{{ appointment.assigned_doctor }}</td>
+      <td>{{ appointment.reason }}</td>
+    </tr>
+    {% empty %}
+    <tr>
+      <td colspan="6">No appointments found.</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script>
+    $(document).ready(function() {
+    // Define moment objects for today, yesterday, last week, and last month
+    var today = moment();
+    
+    var yesterday = moment().subtract(1, 'days');
+    var lastWeek = moment().subtract(1, 'weeks');
+    console.log(lastWeek)
+    var lastMonth = moment().subtract(1, 'months');
+
+    // Get all appointment rows
+    var appointmentRows = $('.appointment-rows tr');
+
+    // Hide loading indicator on page load
+    $('.loading').hide();
+
+    // Handle filter select change event
+    $('#filter-select').on('change', function() {
+      // Get selected filter value
+      var filterValue = $(this).val();
+
+      // Show loading indicator
+      $('.loading').show();
+
+      // Hide all appointment rows
+      appointmentRows.hide();
+
+      // Show appropriate appointment rows based on selected filter
+      switch(filterValue) {
+        case 'all':
+          appointmentRows.show();
+          break;
+        case 'today':
+        
+        appointmentRows.filter(function() {
+          return $(this).find('td:first').text() === today.format('YYYY-MM-DD');
+        }).show();
+          break;
+          case 'yesterday':
+        appointmentRows.filter(function() {
+          return $(this).find('td:first').text() === yesterday.format('YYYY-MM-DD');
+        }).show();
+        break;
+      case 'last-week':
+        appointmentRows.filter(function() {
+          var appointmentDate = moment($(this).find('td:first').text());
+          return appointmentDate.isBetween(lastWeek, today, 'day', '[]');
+        }).show();
+        break;
+      case 'last-month':
+        appointmentRows.filter(function() {
+          var appointmentDate = moment($(this).find('td:first').text());
+          return appointmentDate.isBetween(lastMonth, today, 'day', '[]');
+        }).show();
+        break;
+      }
+
+      // Hide loading indicator
+      $('.loading').hide();
+
+    });
+
+    
+  // Handle clear filter button click event
+  $('#clear-filter').on('click', function() {
+    $('#filter-select').val('all');
+    appointmentRows.show();
+  });
+});
+
+
+
+  </script>
+  </body>
+  {% endblock%}

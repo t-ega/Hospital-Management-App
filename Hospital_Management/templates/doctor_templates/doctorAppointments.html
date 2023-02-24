@@ -1,18 +1,16 @@
 {% extends templates.base %}
 {% load static %}
-{% load has_group %}
 {% block content %}
     <div class="alert alert-success" style="display: none" role="alert">
       Item has been deleted browser would refresh immediately!
     </div>
     {% for appointment in appointments %}
-
-    <div class="card appointment-card" id="card-{{appointment.id}}" >
         {% if appointment.date < date.today %}
-        <span class="text-danger"><i class="fas fa-exclamation-circle mr-1"></i></span>
+            <span class="text-danger"><i class="fas fa-exclamation-circle mr-1"></i></span>
         {% endif %}
+        <div class="card appointment-card" id="card-{{appointment.id}}">
         <div class="card-body d-flex align-items-center">
-            <img src="{% static '/images/avatar.jpg' %}" alt="User profile picture" class="rounded-circle mr-3" width="50" height="50">
+            <img src="{% static 'images/avatar' %}" alt="User profile picture" class="rounded-circle mr-3" width="50" height="50">
             <div class="text-left">
               <h5 class="card-title mb-1">{{ appointment.patient }}</h5>
               <p class="card-text mb-1"><i class="far fa-calendar-alt mr-1"></i>{{ appointment.date }} at {{ appointment.start_time }}</p>
@@ -63,7 +61,6 @@
                       <label for="reason" >Reason</label>
                       <textarea class="form-control" name="reason" id="reason"></textarea>
                   </div>
-                  {% if request.user|has_group:'Doctors' %}
                   <div class="form-group">
                       <label for="reason" >Appointment Status</label>
                       <select class="form-control" name="status" id="status">
@@ -72,7 +69,6 @@
                           <option value="C">Completed</option>
                       </select>
                   </div>
-                  {% endif %}
                    <div class="form-group">
                       <label for="patientDoc">Assigned Doctor</label>
                        <input type="text" hidden name="assigned_doctor" id="doc">

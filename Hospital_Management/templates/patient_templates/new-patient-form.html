@@ -1,0 +1,87 @@
+{% extends templates.base %}
+{% load has_group %}
+{% block content %}
+<head>
+    <meta charset="UTF-8">
+    <title>New Appointment</title>
+</head>
+<body>
+      <div>
+          <button class="btn btn-primary" style="margin: 1rem" onclick="displayModal()"> View Form</button>
+      </div>
+           <div class="modal fade" id="newModal" tabindex="-1" role="dialog" aria-labelledby="newModalLabel" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="newModalLabel">New PatientDetails</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                  <form id="editForm" method="POST" action="{% url 'new-patient' %}" >
+                      {% csrf_token %}
+                      <div>
+                      <label for="patientSelect">Patient select</label>
+                        <select class="form-control" required name="patient" id="patientSelect">
+                            {% for i in patient %}
+                            <option value="{{i.patient.id}}">{{i}}</option>
+                            {% endfor %}
+                        </select>
+                      <button type="button" data-toggle="newModal" id="newPatient">Add New</button>
+                      </div>
+                      <div class="form-group">
+                        <label for="firstname">FirstName</label>
+                        <input type="text" class="form-control" name="firstname" id="firstname" placeholder="PatientDetails's Firstname">
+                      </div>
+                      <div class="form-group">
+                        <label for="lastname">LastName</label>
+                        <input type="text" step="any" class="form-control" name="lastname" id="lastname" placeholder="PatientDetails's Lastname">
+                      </div>
+                      <div class="form-group">
+                          <label for="mobile">Mobile Number</label>
+                          <input type="tel" class="form-control" name="mobile" id="mobile">
+                      </div>
+                      <div class="form-group">
+                          <label for="weight">Weight</label>
+                          <input type="number" class="form-control" name="weight" id="weight">
+                      </div>
+                      <div class="form-group">
+                          <label for="height">Height</label>
+                          <input type="number" class="form-control" name="height" id="height">
+                      </div>
+                      <div class="form-group">
+                          <label for="blood_type">Blood Type</label>
+                          <input type="text" class="form-control" name="blood_type" id="blood_type">
+                      </div>
+                      <div class="form-group">
+                          <label for="address">Address</label>
+                          <input type="text" class="form-control" name="address" id="address">
+                      </div>
+                      <div class="form-group">
+                          <label for="symptoms">Symptoms</label>
+                          <textarea class="form-control" name="symptoms" id="symptoms"></textarea>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary" id="saveButton">Add New PatientDetails</button>
+                      </div>
+                  </form>
+              </div>
+            </div>
+          </div>
+        </div>
+
+</div>
+  </div>
+<script>
+    $(document).ready(function () {
+           $('#newModal').modal('show');
+    })
+
+    function displayModal(){
+    $('#newModal').modal('show');
+    }
+</script>
+</body>
+{% endblock %}

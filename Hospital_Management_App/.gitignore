@@ -1,0 +1,28 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Local development files
+db.sqlite3
+*.log
+
+# Media files
+/media/
+
+# Static files
+/static/
+
+# Environment variables
+.venv
+
+# Editor-specific files
+.vscode/
+*.swp
+*.swo
+*.bak
+
+# Ignore migrations
+*/migrations/*.py
+*/migrations/*.bak
+*/migrations/*.sqlite3

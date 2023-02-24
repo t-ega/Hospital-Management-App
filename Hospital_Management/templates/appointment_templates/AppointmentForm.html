@@ -1,0 +1,247 @@
+{% extends templates.base %}
+{% load has_group %}
+{% load get_patient %}
+{% block content %}
+<head>
+    <meta charset="UTF-8">
+    <title>Appointment Form</title>
+</head>
+<body>
+      <form class="form m-4" method="POST" id="appointmentForm" action="{% url 'create-appointment' %}">
+          {% csrf_token %}
+          <div class="alert alert-danger" style="display: none" role="alert">
+              No Doctor Found for this date or time please try changing your selection
+          </div>
+          <div class="alert alert-success" id="success" style="display: none" role="alert">
+              Appointment Successfully created!
+          </div>
+          <div class="form-group">
+              {% if  request.user|has_group:"Patients" %}
+              <label for="patientSelect">PatientDetails select</label>
+                     {% if request.user|get_patient %}
+                <select class="form-control" required name="patient" id="patientSelect">
+                    <option value="{{request.user.id}}">{{request.user}}</option>
+                </select>
+                    {% else %}
+                <p>Please you have not yet added your details click new to begin </p>
+                <button type="button" data-toggle="newModal" id="newPatient">Add New</button>
+                    {% endif %}
+              {% else %}
+                <label for="patientSelect">Patient select</label>
+                <select class="form-control" required name="patient" id="patientSelect">
+                    {% for i in patient %}
+                    <option value="{{i.patient.id}}">{{i}}</option>
+                    {% endfor %}
+                </select>
+                <button type="button" data-toggle="newModal" id="newPatient">Add New</button>
+              {% endif %}
+          </div>
+          <div class="form-group">
+            <label for="appointmentDate">Select Date</label>
+            <input type="date" required class="form-control" name="date" id="appointmentDate">
+          </div>
+          <div class="form-group">
+            <label for="startTime">Starts</label>
+            <input type="time" required class="form-control" name="start_time" id="startTime">
+          </div>
+          <div class="form-group">
+            <label for="endTime">Ends</label>
+            <input type="time" required class="form-control" name="end_time" id="endTime">
+          </div>
+           <div class="form-group">
+            <label for="appointmentReason">Reason</label>
+               <textarea class="form-control" required id="appointmentReason" name="reason"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="selectDoctor">Available Doctors</label>
+             <select class="form-control" id="selectDoctor" name="assigned_doctor" required>
+             </select>
+          </div>
+          <button type="submit" class="btn btn-primary bg-blue-500">Submit</button>
+      </form>
+      </div>
+         <div class="modal fade" id="newModal" tabindex="-1" role="dialog" aria-labelledby="newModalLabel" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="newModalLabel">New PatientDetails</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                  <form id="newForm" method="POST" action="{% url 'new-patient' %}">
+                      {% csrf_token %}
+                      {% if  request.user|has_group:"Patients" %}
+                      <label for="patient">Patient Email</label>
+                        <select class="form-control" required name="patient" id="patient">
+                            <option value="{{request.user.id}}">{{request.user.email}}</option>
+                        </select>
+                      <div class="form-group">
+                        <label for="firstName">FirstName</label>
+                        <input type="text" class="form-control" name="firstname" id="firstName" value="{{request.user.firstname}}" readonly>
+                      </div>
+                      <div class="form-group">
+                        <label for="lname">LastName</label>
+                        <input type="text" step="any" class="form-control" name="lastname" id="lname" value="{{request.user.lastname}}" readonly>
+                      </div>
+                      {% else %}
+                      <label for="patient">Patients</label>
+                        {% for i in patient %}
+                        <select class="form-control" required name="patient" id="patients">
+                            <option value="{{i.patient.id}}">{{i}}</option>
+                        </select>
+                        {% endfor %}
+                      {% endif %}
+                      <div class="form-group">
+                          <label for="num">Mobile Number</label>
+                          <input type="tel" class="form-control" name="mobile" id="num">
+                      </div>
+                      <div class="form-group">
+                          <label for="weight">Weight</label>
+                          <input type="number" class="form-control" name="weight" id="weight">
+                      </div>
+                      <div class="form-group">
+                          <label for="age">Age</label>
+                          <input type="number" class="form-control" name="age" id="age">
+                      </div>
+                      <div class="form-group">
+                          <label for="height">Height</label>
+                          <input type="number" class="form-control" name="height" id="height">
+                      </div>
+                      <div class="form-group">
+                          <label for="num">Blood Type</label>
+                          <input type="text" class="form-control" name="blood_type" id="btype">
+                      </div>
+                      <div class="form-group">
+                          <label for="add">Address</label>
+                          <input type="text" class="form-control" name="address" id="add">
+                      </div>
+                      <div class="form-group">
+                          <label for="sym">Symptoms</label>
+                          <textarea class="form-control" name="symptoms" id="sym"></textarea>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary" id="saveButton">Add New PatientDetails</button>
+                      </div>
+                  </form>
+              </div>
+            </div>
+          </div>
+        </div>
+  </div>
+<script>
+    $(document).ready(function () {
+        $(document).on('click', '[id="newPatient"]', function (){
+           $('#newModal').modal('show');
+        });
+
+        $('#patientSelect').on('change', function() {
+        $.ajax({
+                  url:'/patient/' + $('#patientSelect').val(),
+                  success: function (response) {
+                    $('#appointmentReason').html(response.symptoms)
+                  }
+        });
+      });
+    })
+
+
+    $(document).ready(function() {
+      $('#newForm').submit(function(event) {
+          event.preventDefault();
+           $.ajax({
+                data: $(this).serialize(),
+                method: 'POST',
+                url: '/new-patient/',
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
+                },
+                success: function (response) {
+                    $('#newModal').modal('hide')
+                    $('#success').show();
+                    location.reload()
+                },
+
+           });
+       });
+    });
+
+     $(document).ready(function() {
+      $('#appointmentForm').submit(function(event) {
+        event.preventDefault();
+        var formData = $(this).serialize();
+
+        $.ajax({
+          url: '/create-appointment/',
+          type: 'POST',
+          data: formData,
+          beforeSend: function(xhr) {
+            xhr.setRequestHeader("X-CSRFToken", '{{ csrf_token }}');
+          },
+          success: function(response) {
+            // Success logic here
+            if (response.success){
+
+                 $('#success').show();
+                 $('#appointmentDate').val('')
+                 $('#startTime').val('')
+                 $('#endTime').val('')
+                 
+            }
+            else {
+                var errors = response['errors']
+                for (var key in errors){
+                    var errVal = errors[key]
+                    for (var err in errVal){
+                        var element = key
+                        console.log($("[name='" + element + "']").eq(0))
+                       $("[name='" + element + "']").eq(0).attr('title', errVal[0]).tooltip('show')
+                    }
+                }
+            }
+          },
+        });
+      });
+    });
+
+     function checkAvailability() {
+        if ( ($('#appointmentDate').val()) && ($('#startTime').val()) && ($('#endTime').val()) ){
+                var date = new Date($('#appointmentDate').val())
+                date = date.getDay()
+                $.ajax({
+                  url: '/available-doctors' + '/' + date + '/' + $('#startTime').val() + '/' + $('#endTime').val() +'/',
+                  success:function (response) {
+                      if (!response['error']){
+                            // clear existing records
+                            var doctors = $('#selectDoctor')
+                            doctors.empty()
+                            // close the alert if open
+                            $('.alert')[0].style.display = 'none';
+                          for (var res in response){
+                            $('#selectDoctor').append(new Option(response[res], res))
+                          }
+                      }
+                      else{
+                        $('.alert')[0].style.display = 'block';
+                        setTimeout(function(){$('.alert')[0].style.display = 'none'}, 4000)
+                        // clear existing records
+                        var doctors = $('#selectDoctor')
+                            doctors.empty()
+                      }
+                  },
+                });
+        }
+     }
+
+    $(document).ready(function() {
+        document.getElementById('endTime').setAttribute('onfocusout', 'checkAvailability()')
+        document.getElementById('startTime').setAttribute('onfocusout', 'checkAvailability()')
+        document.getElementById('appointmentDate').setAttribute('onfocusout', 'checkAvailability()')
+
+    });
+
+</script>
+</body>
+{% endblock %}
