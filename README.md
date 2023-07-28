@@ -50,36 +50,48 @@ Logging In
 - Select a user to chat with by clicking on the '+' icon located at the top right corner and start chatting.
 ![Doctor Patient Chat](Screenshots/hospital%20management%20chat%20video.gif)
 
-- 
 
 # Screenshots
 - Patient Home Screen
 ![Patients Home](Screenshots/patients%20home.png)
+
 - Patient Can Add Their Medical Details
 ![Patients Add Details](Screenshots/patients%20add%20details.png)
+
 - Patient trying to create an appointment without registering their medical condition
 ![Patients Create Apppointment Warning](Screenshots/patients%20create%20apppointment%20warning.png)
+
 - Patient appointment before filling appointment details
 ![Patients Create Apppointment Before](Screenshots/patients%20create%20apppointment%20before.png)
+
 - Patient Appointment after filling appointment details
 ![Patients Create Apppointment After](Screenshots/patients%20create%20apppointment%20after.png)
+
 - Appointment successfully created
 ![Patients Create Apppointment Completed](Screenshots/patients%20create%20apppointment%20completed.png)
+
 - Patient can edit their appointment time and date after they have created it 
 ![Patients Edit Appointment](Screenshots/patients%20edit%20appointment.png)
+
 - Patient After Appointment has been approved
 ![Patients Approved Apointment](Screenshots/patients%20approved%20apointment.png)
+
 - Patient Pending appointment screen
 ![Patients Appointments](Screenshots/patients%20appointments.png)
+
 - Patient Records Screen
 ![Patients Records](Screenshots/patients%20records.png)
+
 - Doctor home screen
 ![Doctor Home Page](Screenshots/doctor%20home.png)
+
 - Doctor can approve/reject/confrim appointment for patients
 ![Doctor Approve Appointment](Screenshots/doctor%20approve%20appointment.png)
+
 - Doctor chat with Patient
 ![Doctor Chat With Patient](Screenshots/doctor%20chat%20with%20patient.png)
- - Patient can chat with their doctor they have been assigned to for appointmne
+
+ - Patient can chat with their doctor they have been assigned to for appointment
 ![Patient Chat With Doctor](Screenshots/patient%20chat%20with%20doctor.png)
 
 
