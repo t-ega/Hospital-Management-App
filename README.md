@@ -48,10 +48,26 @@ Logging In
 # Chatting
 - After logging in as a doctor or patient, select the Chat tab.
 - Select a user to chat with by clicking on the '+' icon located at the top right corner and start chatting.
+- ![Alt Text](Screenshots/hospital%20management%20chat%20video.gif)
+
 - 
 
-#Screenshots
-![Screenshot 1](Screenshots/doctor%20home.png)
+# Screenshots
+![Patients Add Details](Screenshots/patients%20add%20details.png)
+![Patients Appointments](Screenshots/patients%20appointments.png)
+![Patients Approved Apointment](Screenshots/patients%20approved%20apointment.png)
+![Patients Create Apppointment After](Screenshots/patients%20create%20apppointment%20after.png)
+![Patients Create Apppointment Before](Screenshots/patients%20create%20apppointment%20before.png)
+![Patients Create Apppointment Completed](Screenshots/patients%20create%20apppointment%20completed.png)
+![Patients Create Apppointment Warning](Screenshots/patients%20create%20apppointment%20warning.png)
+![Patients Edit Appointment](Screenshots/patients%20edit%20appointment.png)
+![Patients Home](Screenshots/patients%20home.png)
+![Patients Records](Screenshots/patients%20records.png)
+![Doctor Home Page](Screenshots/doctor%20home.png)
+![Doctor Approve Appointment](Screenshots/doctor%20approve%20appointment.png)
+![Doctor Chat With Patient](Screenshots/doctor%20chat%20with%20patient.png)
+![Patient Chat With Doctor](Screenshots/patient%20chat%20with%20doctor.png)
+
 
 # Contributing
 If you'd like to contribute to Hospital Management App, please fork the repository.
