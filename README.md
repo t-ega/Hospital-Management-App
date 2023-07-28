@@ -55,10 +55,6 @@ Logging In
 # Screenshots
 - Patient Home Screen
 ![Patients Home](Screenshots/patients%20home.png)
-- Patient Records Screen
-![Patients Records](Screenshots/patients%20records.png)
-- Patient Can Create An Appointment With A Doctor Based On Their Availability
-![Patients Appointments](Screenshots/patients%20appointments.png)
 - Patient Can Add Their Medical Details
 ![Patients Add Details](Screenshots/patients%20add%20details.png)
 - Patient trying to create an appointment without registering their medical condition
@@ -73,6 +69,10 @@ Logging In
 ![Patients Edit Appointment](Screenshots/patients%20edit%20appointment.png)
 - Patient After Appointment has been approved
 ![Patients Approved Apointment](Screenshots/patients%20approved%20apointment.png)
+- Patient Pending appointment screen
+![Patients Appointments](Screenshots/patients%20appointments.png)
+- Patient Records Screen
+![Patients Records](Screenshots/patients%20records.png)
 - Doctor home screen
 ![Doctor Home Page](Screenshots/doctor%20home.png)
 - Doctor can approve/reject/confrim appointment for patients
