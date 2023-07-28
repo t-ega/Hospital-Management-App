@@ -51,7 +51,7 @@ Logging In
 - 
 
 #Screenshots
-![Screenshot 1](Screenshots/"doctor home".png)
+![Screenshot 1](Screenshots/doctor%20home.png)
 
 # Contributing
 If you'd like to contribute to Hospital Management App, please fork the repository.
