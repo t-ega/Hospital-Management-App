@@ -48,6 +48,11 @@ Logging In
 # Chatting
 - After logging in as a doctor or patient, select the Chat tab.
 - Select a user to chat with by clicking on the '+' icon located at the top right corner and start chatting.
+- 
+
+#Screenshots
+![Screenshot 1](Screenshots/"doctor home".png)
+
 # Contributing
 If you'd like to contribute to Hospital Management App, please fork the repository.
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
